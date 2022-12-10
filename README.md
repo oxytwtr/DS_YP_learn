@@ -1,2 +1,2 @@
 # DS_YP_learn
-Projects (python - Jupiter notebook) completed during data engineering training (Yandex Praktikum)
+Projects (python - Jupyter notebook) completed during data engineering training (Yandex Praktikum)
