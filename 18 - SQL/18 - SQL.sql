@@ -1,3 +1,8 @@
+/*
+В этих заданиях нужно проанализировать данные о фондах и инвестициях и написать запросы к базе. Задания будут постепенно усложняться, но всё необходимое для их выполнения: операторы, функции, методы работы с базой — вы уже изучили на курсе.
+
+*/
+
 /* 1/23
 Посчитайте, сколько компаний закрылось. */
 
@@ -236,7 +241,6 @@ FROM (SELECT
 /* 18/23
 
 Напишите похожий запрос: выведите среднее число учебных заведений (всех, не только уникальных), которые окончили сотрудники Facebook. */	  
-
 WITH
 closed_c AS (SELECT id, name FROM company WHERE status = 'closed' ),
 
@@ -290,6 +294,33 @@ AND CAST(DATE_TRUNC('year', fr.funded_at) AS date) BETWEEN '2012-01-01' AND '201
 Не учитывайте те сделки, в которых сумма покупки равна нулю. Если сумма инвестиций в компанию равна нулю, исключите такую компанию из таблицы. 
 Отсортируйте таблицу по сумме сделки от большей к меньшей, а затем по названию купленной компании в лексикографическом порядке. Ограничьте таблицу первыми десятью записями. */		  
 
+WITH buyers AS (SELECT 
+                    a.id AS id2, 
+                    c.name AS name_acquiring, 
+                    a.price_amount AS total 
+                FROM company AS c 
+                LEFT JOIN acquisition AS a ON c.id = a.acquiring_company_id), 
+ 
+sellers AS (SELECT 
+                a.id AS id2, 
+                c.name AS name_acquired,
+                c.funding_total AS sale 
+            FROM company AS c 
+            LEFT JOIN acquisition AS a ON c.id = a.acquired_company_id 
+            WHERE status = 'acquired') 
+ 
+SELECT 
+    buyers.name_acquiring,
+    buyers.total,
+    sellers.name_acquired,
+    sellers.sale, 
+    ROUND(buyers.total/sellers.sale) 
+FROM buyers 
+LEFT JOIN sellers ON buyers.id2 = sellers.id2 
+WHERE buyers.total != 0 AND sellers.sale != 0 
+ORDER BY buyers.total DESC, sellers.name_acquired 
+LIMIT 10;
+
 /* 21/23
 
 Выгрузите таблицу, в которую войдут названия компаний из категории social, получившие финансирование с 2010 по 2013 год включительно. 
@@ -305,13 +336,10 @@ comp_non_zero AS (SELECT *,
                    SUM(funding_total) OVER (PARTITION BY name) AS sum_f 
                   FROM company),
 
-
 sum AS (SELECT name AS company_name, id AS comp_id, sum_f
          FROM comp_non_zero
          WHERE category_code = 'social'),
-         
-
-         
+             
 query AS (SELECT *, sum.sum_f
           FROM period
           JOIN sum ON sum.comp_id = period.company_id
@@ -410,6 +438,3 @@ JOIN y2012 ON y2011.country_code  = y2012.country_code
 JOIN y2013 ON y2011.country_code  = y2013.country_code
 
 ORDER BY y2011.avg_ft DESC
-
- 
-
