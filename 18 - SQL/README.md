@@ -18,7 +18,7 @@
 
 Работу с новой базой данных лучше начать с изучения схемы. (ER-диаграмма)
 
-<img src='https://raw.githubusercontent.com/oxytwtr/DS_Yandex_Practicum/main/18-SQL/sql_scheme.png' align="left">
+<img src='https://github.com/oxytwtr/DS_Yandex_Practicum/raw/main/18%20-%20SQL/sql_scheme.png' align="left">
 
 
 Теперь можно познакомиться с данными, которые хранят таблицы.
