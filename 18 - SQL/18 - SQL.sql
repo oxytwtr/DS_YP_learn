@@ -360,40 +360,45 @@ FROM query
  - общая сумма сделок по покупкам в этом месяце. */	
  
  WITH
+-- Сначала выделил раунды, чтобы было только 2010-2013 
 rounds AS (SELECT
            *
           FROM funding_round
           WHERE funded_at BETWEEN '2010-01-01' AND '2013-12-31'),
-          
+
+-- аналогично выделяю компании, чтобы продажа была только 2010-2013          
 a_comps AS (SELECT
            *
            FROM acquisition
            WHERE acquired_at BETWEEN '2010-01-01' AND '2013-12-31'),
- 
+           
+-- соединяю id раундов и имена фондов (investment и fund) 
 fund_count_dis AS (SELECT i.funding_round_id AS f_round_id_i,
                       f.name AS fund_name,
                       i.company_id AS c_name
-                      
                    FROM investment AS i
                    LEFT JOIN fund AS f ON f.id = i.fund_id
-                   
                    WHERE f.country_code = 'USA'),
                    
+-- создаю табл с кол-вом компаний по месяцам и суммой покупок по месяцам                   
 purchase AS (SELECT EXTRACT(MONTH FROM a.acquired_at) AS comp_month,
                     COUNT(a.acquired_company_id) AS comp,
                     SUM(a.price_amount) AS total_purchase
-                    
-            FROM a_comps AS a 
-            GROUP BY comp_month),
-                              
+             FROM a_comps AS a 
+             GROUP BY comp_month),
+
+-- создаю табл с кол-вом фондов (уникальных!) по месяцам 
 rounds_and_funds AS (SELECT EXTRACT(MONTH FROM rounds.funded_at) AS month,
                             COUNT(DISTINCT fund_count_dis.fund_name) AS funds
-                   
                      FROM rounds 
                      LEFT JOIN fund_count_dis ON fund_count_dis.f_round_id_i = rounds.id
                      GROUP BY month)
-
-SELECT rounds_and_funds.month, rounds_and_funds.funds, purchase.comp, purchase.total_purchase
+                     
+-- соединяю предыдущие две таблицы в одну
+SELECT rounds_and_funds.month, 
+       rounds_and_funds.funds, 
+       purchase.comp, 
+       purchase.total_purchase
 FROM rounds_and_funds
 LEFT JOIN purchase ON rounds_and_funds.month = purchase.comp_month
 
