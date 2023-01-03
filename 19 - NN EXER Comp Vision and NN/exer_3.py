@@ -2,7 +2,6 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv2D, Flatten, Dense, AvgPool2D
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-import numpy as np
 
 def load_train(path):
                             
