@@ -4,7 +4,7 @@
 
 Схема базы данных:
 
-<img src='https://github.com/oxytwtr/DS_Yandex_Practicum/raw/main/18%20-%20SQL%20EXER/BasicSQL_database_scheme.png' align="left">
+<img src='https://github.com/oxytwtr/DS_Yandex_Practicum/raw/main/18%20-%20SQL%20EXER/description/BasicSQL_database_scheme.png' align="left">
 
 **`actor`**
 
