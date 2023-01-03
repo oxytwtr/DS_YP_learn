@@ -167,3 +167,49 @@ taxi.registerTempTable("taxi")
 
 print(spark.sql('SELECT COUNT(DISTINCT date) FROM taxi WHERE pickups>200').show(5)) 
 
+# 8 - GroupBy в PySpark
+
+# 1/2
+# Сгруппируйте записи по месяцам. По каждому месяцу рассчитайте среднее количество заказов. 
+# Напечатайте на экране таблицу с месяцами и средним количеством заказов по убыванию.
+
+from pyspark.sql import SparkSession
+
+APP_NAME = "DataFrames"
+SPARK_URL = "local[*]"
+
+spark = SparkSession.builder.appName(APP_NAME) \
+        .config('spark.ui.showConsoleProgress', 'false') \
+        .getOrCreate()
+
+taxi = spark.read.load('/datasets/pickups_terminal_5.csv', 
+                       format='csv', header='true', inferSchema='true')
+
+taxi = taxi.fillna(0)
+
+taxi.registerTempTable("taxi")
+
+print(spark.sql('SELECT EXTRACT(MONTH FROM date), AVG(pickups) FROM taxi '
+                'GROUP BY EXTRACT(MONTH FROM date) ORDER BY AVG(pickups) DESC').show()) 
+                
+# 2/2
+# Вычислите среднее количество заказов за каждый час. Затем отсортируйте данные по убыванию. 
+# Выведите самые загруженные 10 часов и среднее количество заказов такси в эти часы.  
+from pyspark.sql import SparkSession
+
+APP_NAME = "DataFrames"
+SPARK_URL = "local[*]"
+
+spark = SparkSession.builder.appName(APP_NAME) \
+        .config('spark.ui.showConsoleProgress', 'false') \
+        .getOrCreate()
+
+taxi = spark.read.load('/datasets/pickups_terminal_5.csv', 
+                       format='csv', header='true', inferSchema='true')
+
+taxi = taxi.fillna(0)
+
+taxi.registerTempTable("taxi")
+
+print(spark.sql('SELECT hour,  AVG(pickups) FROM taxi GROUP BY hour  '
+                'ORDER BY AVG(pickups) DESC').show(10))               
