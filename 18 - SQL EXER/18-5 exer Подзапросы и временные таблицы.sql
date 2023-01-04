@@ -223,28 +223,33 @@ GROUP BY name
 В этом задании не будет подсказок. Используйте любые методы, которые посчитаете нужными.
 */
 
-SELECT z.invoice_month AS invoice_month, j.year_2011 AS year_2011, 
-y.year_2012 AS year_2012, z.year_2013 AS year_2013 
-FROM (SELECT EXTRACT(MONTH FROM CAST(invoice_date AS DATE)) AS invoice_month, 
-      EXTRACT(YEAR FROM CAST(invoice_date AS DATE)) AS year, 
-      COUNT(invoice_id) AS total 
+WITH 
+i AS (SELECT EXTRACT(MONTH FROM CAST(invoice_date AS DATE)) AS invoice_month, 
+             EXTRACT(YEAR FROM CAST(invoice_date AS DATE)) AS year, 
+             COUNT(invoice_id) AS total 
       FROM invoice 
-      GROUP BY EXTRACT(MONTH FROM CAST(invoice_date AS DATE))) AS i 
-LEFT JOIN       
-(SELECT invoice_month AS invoice_month, total AS year_2011 
-FROM invoice 
-WHERE i.year = '2011' 
-GROUP BY EXTRACT(MONTH FROM CAST(invoice_date AS DATE))) AS j ON i.invoice_month=j.invoice_month 
-LEFT JOIN  
-(SELECT invoice_month AS invoice_month, total AS year_2012 
-FROM invoice 
-WHERE i.year = '2012' 
-GROUP BY EXTRACT(MONTH FROM CAST(invoice_date AS DATE))) AS y ON j.invoice_month=y.invoice_month 
-LEFT JOIN  
-(SELECT invoice_month AS invoice_month, total AS year_2013 
-FROM invoice 
-WHERE i.year = '2013' 
-GROUP BY EXTRACT(MONTH FROM CAST(invoice_date AS DATE))) AS z ON y.invoice_month=z.invoice_month
+      GROUP BY invoice_month, year),
+
+j AS (SELECT invoice_month AS invoice_month, total AS year_2011 
+      FROM i 
+      WHERE i.year = '2011' ),
+      
+y AS (SELECT invoice_month AS invoice_month, total AS year_2012 
+      FROM i 
+      WHERE i.year = '2012' ),
+
+z AS (SELECT invoice_month AS invoice_month, total AS year_2013 
+      FROM i 
+      WHERE i.year = '2013' )
+
+SELECT DISTINCT z.invoice_month AS invoice_month, 
+       j.year_2011 AS year_2011, 
+       y.year_2012 AS year_2012, 
+       z.year_2013 AS year_2013 
+FROM i
+LEFT JOIN j ON i.invoice_month=j.invoice_month 
+LEFT JOIN y ON j.invoice_month=y.invoice_month 
+LEFT JOIN z ON y.invoice_month=z.invoice_month
 
 /* 2/4
 Отберите фамилии пользователей, которые:
