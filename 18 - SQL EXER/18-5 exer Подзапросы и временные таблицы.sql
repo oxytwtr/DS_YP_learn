@@ -251,6 +251,8 @@ LEFT JOIN j ON i.invoice_month=j.invoice_month
 LEFT JOIN y ON j.invoice_month=y.invoice_month 
 LEFT JOIN z ON y.invoice_month=z.invoice_month
 
+ORDER BY z.invoice_month
+
 /* 2/4
 Отберите фамилии пользователей, которые:
 оформили хотя бы один заказ в январе 2013 года,
