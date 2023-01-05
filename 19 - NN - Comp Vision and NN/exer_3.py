@@ -26,7 +26,7 @@ def create_model(input_shape):
     # слои 
 
     model.add(Conv2D(filters=8, kernel_size=(3, 3), padding='same',
-                 activation="relu"))#, input_shape=input_shape))
+                 activation="relu", input_shape=input_shape))
     model.add(AvgPool2D(pool_size=(2, 2), strides=None, padding='same')) 
 
     model.add(Conv2D(filters=24, kernel_size=(3, 3), padding='valid', 
